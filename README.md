@@ -111,14 +111,33 @@ unsuccessful sign-ins in the sample.
 
 ### Validation Status
 
-The expected output is derived from the sample data.
-Execution in Microsoft Sentinel has not yet been documented.
+Executed in Azure Monitor Log Analytics using synthetic data.
 
-Suggested checks:
-- Run the sample unchanged: expect one result.
-- Remove one unsuccessful event: expect no results.
-- Move the success beyond the 10-minute window: expect no results.
-- Change the success IP: expect no results.
+| Test | Expected result | Observed result |
+|---|---|---|
+| Three failures followed by success from the same IP within 10 minutes | One matching row | One matching row |
+| Only two failures before success | No matching rows | No matching rows |
+| Success moved to 09:20, outside the 10-minute window | No matching rows | No matching rows |
+| Successful sign-in changed to a different IP | No matching rows | No matching rows |
+| Original sample restored | One matching row | One matching row |
+
+These checks validate the query against the sample scenarios.
+They do not establish production readiness or prove account compromise.
+
+### Execution Evidence
+
+The screenshot shows the original sample returning one account
+with three unsuccessful events followed by a successful sign-in.
+
+![KQL query result showing three failures followed by success](failed-signins-success-result.png)
+
+### What I Learned
+
+- Correlating events by account, IP address, and time using KQL.
+- Testing both matching and nonmatching scenarios.
+- Understanding that requiring the same IP can miss activity
+  when an attacker changes IP addresses.
+- Distinguishing a suspicious sign-in pattern from confirmed compromise.
 
 ### References
 
